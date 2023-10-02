@@ -1,0 +1,57 @@
+Metadata-Version: 2.1
+Name: psycog
+Version: 0.0.1
+Summary: A tool for performing psychophysical and cognitive experiments.
+Author: Sam Mathias
+Author-email: samuel.mathias@childrens.harvard.edu
+Requires-Python: >=3.11,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Description-Content-Type: text/markdown
+
+# Psychophysics and Cognition (`psycog`)
+
+This software is for measuring psychophysical and cognitive abilities in humans. I use it
+for my own research, but it is open source and freely available for anyone to use.
+
+## Installation
+
+### Python Package
+
+`psycog` is a Python package. You can install it using `pip`:
+
+```bash
+
+pip install psycog
+
+```
+
+Due to the large number of dependencies, it is strongly recommended that you install 
+`psycog` in a fresh [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+
+### Standalone Executable
+
+I intend to make `psycog` available as a standalone executable in the future. This will
+allow you to run experiments without having to install Python or any dependencies, though
+the executable will be quite large (~1GB). This is not yet available.
+
+## Usage
+
+### Command Line
+
+`psycog` is GUI-based. To run it, simply type `psycog` into the command line. This will
+open the main menu, from which you can select the experiments you wish to run.
+
+### Python
+
+You can also run the GUI from inside a Python REPL or script, though I'm not sure why you
+would want to do this.
+
+```python
+
+from psycog import run
+
+run()
+
+```
+

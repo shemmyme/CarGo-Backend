@@ -41,8 +41,12 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
-
-
+    licenseFront = models.ImageField(blank=True)
+    licenseBack = models.ImageField(blank=True)   
+    livePhoto = models.ImageField(blank=True) 
+    is_verified = models.BooleanField(default=False)
+    
+    
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
@@ -57,3 +61,8 @@ class User(AbstractUser):
     
     def has_module_perms(self,add_label):
         return True
+    
+    
+    
+    
+  

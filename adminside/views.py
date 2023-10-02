@@ -1,23 +1,57 @@
-from django.contrib.auth import authenticate, login
-from rest_framework_jwt.settings import api_settings
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+# views.py
+from .models import Cars
+from userside.models import User
+from .serializers import CarsSerializer
+from userside.serializers import UserSerializer
 from rest_framework.response import Response
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView
+from rest_framework.generics import CreateAPIView
+from rest_framework.views import APIView
+from rest_framework import status, generics
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    username = request.data.get('email')
-    password = request.data.get('password')
 
-    user = authenticate(request, username=username, password=password)
 
-    if user is not None:
-        login(request, user)
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-        return Response({'token': token, 'message': 'Login successful'})
-    else:
-        return Response({'message': 'Login failed'}, status=401)
+class CarAddView(generics.CreateAPIView):
+    queryset = Cars.objects.all()
+    serializer_class = CarsSerializer
+    
+    def create(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        print(request.data,'reqqqqqqqqqqqqqqqst')  # Print the request data
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        print(serializer.errors)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CarListView(generics.ListAPIView):
+    queryset = Cars.objects.all()
+    serializer_class = CarsSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class CarDeleteView(generics.DestroyAPIView):
+    queryset = Cars.objects.all()  
+    serializer_class = CarsSerializer
+    
+
+    
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+    def list(self,requestm,*args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset,many=True)
+        return Response(serializer.data)
+    
+        

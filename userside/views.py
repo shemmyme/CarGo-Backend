@@ -1,14 +1,3 @@
-# from django.http import JsonResponse
-# from rest_framework.response import Response
-# from rest_framework.decorators import api_view
-# from rest_framework.views import APIView
-# from userside.models import User
-# from rest_framework.generics import ListCreateAPIView
-# from django.core.exceptions import ObjectDoesNotExist
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-# from rest_framework_simplejwt.views import TokenObtainPairView
-# from .serializers import UserSerializer
-
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -16,7 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
 from .serializers import UserSerializer,UserRegisterSerializer
 from .models import User
 from django.http import HttpResponseRedirect
@@ -25,6 +16,16 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from adminside.serializers import CarsSerializer
+from adminside.models import Cars
+from rest_framework import viewsets
+
+
+
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -32,7 +33,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['email'] = user.email
         token['username'] = user.username
-        token['is_admin'] = user.is_admin
+        token['is_admin'] = user.is_admin   
+        token['id'] = user.id
+        token['is_verified'] = user.is_verified
         return token
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -59,14 +62,15 @@ class UserRegistration(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        print('ayyooooooo',email,password)
         serializer = UserRegisterSerializer(data=request.data)
-        print(serializer,'serializer>>>>>>>>>>>>>')
         if serializer.is_valid(raise_exception=True):
-
             user = serializer.save()
             user.set_password(password)
             user.save()
+
+            # Get the user's ID
+            user_id = user.id
+            print(user_id,'usersrsrsrsrrs ididididid')
 
             current_site = get_current_site(request)
             mail_subject = 'Please activate your account'
@@ -81,10 +85,18 @@ class UserRegistration(APIView):
             send_email = EmailMessage(mail_subject, message, to=[to_email])
             send_email.send()
 
-            return Response({'status': 'success', 'msg': 'A verificaiton link sent to your registered email address', "data": serializer.data})
+            response_data = {
+                'status': 'success',
+                'msg': 'A verification link sent to your registered email address',
+                'data': {
+                    'id': user_id, 
+                },
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'error', 'msg': serializer.errors})
 
+      
 @api_view(["GET"])
 def getRoutes(request):
     routes = [
@@ -93,4 +105,78 @@ def getRoutes(request):
     ]
     return Response(routes)
 
+@receiver(post_save, sender=User)
+def send_email_to_admin(sender, instance, created, **kwargs):
+    if created and (instance.licenseFront or instance.licenseBack):
+        subject = "User Uploaded License Photo"
+        message = f"User {instance.username} (ID: {instance.id}) has uploaded a license photo."
+        from_email = "cargo.rentals123@gmail.com"
+        recipient_list = ["shemim313@gmail.com"]
 
+        send_mail(subject, message, from_email, recipient_list)
+
+
+# ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+@api_view(['GET'])
+def UserProfileView(request,user_id):
+    user = get_object_or_404(User,id = user_id)
+    
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+def UpdateUserProfile(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        raise Http404("User not found")
+
+    print(f"request.user.id: {request.user.id}")
+    print(f"user_id from token: {user_id}")
+
+    # Handle licenseFront and licenseBack file uploads
+    license_front = request.FILES.get('licenseFront')
+    license_back = request.FILES.get('licenseBack')
+    live_photo = request.FILES.get('livePhoto')  # Handle livePhoto file upload
+    if license_front:
+        user.licenseFront = license_front
+    if license_back:
+        user.licenseBack = license_back
+    if live_photo:
+        user.livePhoto = live_photo  # Update the livePhoto field
+        print(live_photo)
+
+    user.save()
+
+    # Trigger the signal after saving the user
+    if (license_front or license_back or live_photo):
+        post_save.send(sender=User, instance=user, created=True)
+
+    return Response({"message": "License images and live photo updated successfully"}, status=status.HTTP_201_CREATED)
+
+@api_view(['PATCH'])
+def verify_user(request, userId):
+    try:
+        user = User.objects.get(id=userId)
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    print(user,'nokkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
+    if user:
+        user.is_verified = True  # Set the user as verified
+        user.save()
+        print('aaaaaaaaayiiiiiiiiiiiiiiiii')
+        return Response({"message": "User has been verified"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+    
+@api_view(['GET'])
+def car_detail(request, carId):
+    car = get_object_or_404(Cars, id=carId)
+    serializer = CarsSerializer(car)
+    return Response(serializer.data)
+
+
+    

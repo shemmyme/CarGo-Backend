@@ -1,14 +1,14 @@
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = 'django-insecure-#p6^9)%wldznc)$a0t3@k4*-!+6@sj^wuvec713e!$u*&*4)=5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'userside',
     'adminside',
+    'booking',
+    'chat',
     'corsheaders',
     'rest_framework',
     "rest_framework_simplejwt.token_blacklist",
@@ -90,8 +93,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+ASGI_APPLICATION = 'cargo.asgi.application'
+WSGI_APPLICATION = 'cargo.wsgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 5173)],
+        },
+    },
+}
+
 ROOT_URLCONF = 'cargo.urls'
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:5173",
+]
 
 TEMPLATES = [
     {
@@ -109,7 +129,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cargo.wsgi.application'
+STATIC_URL = "static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "STATIC")]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 
 
 # Database
@@ -173,8 +200,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# EMAIL_HOST='smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'shemim313@gmail.com'
+# EMAIL_HOST_PASSWORD = 'vfolyyaczlmcarag'
+# EMAIL_USE_TLS=True
+
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'shemim313@gmail.com'
-EMAIL_HOST_PASSWORD = 'vfolyyaczlmcarag'
+EMAIL_HOST_USER = 'cargo.rentals123@gmail.com'
+EMAIL_HOST_PASSWORD = 'wbpfmgrqbgbxpwwg'
 EMAIL_USE_TLS=True
