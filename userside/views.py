@@ -22,6 +22,9 @@ from rest_framework.decorators import api_view
 from adminside.serializers import CarsSerializer
 from adminside.models import Cars
 from rest_framework import viewsets
+from django.http import Http404
+from django.http import JsonResponse
+
 
 
 
@@ -157,6 +160,26 @@ def UpdateUserProfile(request, user_id):
 
     return Response({"message": "License images and live photo updated successfully"}, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+def block_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.is_active = False  # Deactivate the user
+        user.save()
+        return JsonResponse({'message': 'User blocked successfully'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    
+@api_view(['POST'])
+def unblock_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.is_active = True  # Activate the user
+        user.save()
+        return JsonResponse({'message': 'User unblocked successfully'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
 @api_view(['PATCH'])
 def verify_user(request, userId):
     try:
@@ -180,3 +203,13 @@ def car_detail(request, carId):
 
 
     
+@api_view(['GET'])
+def UserView(request,user_id):
+    user = get_object_or_404(User,id = user_id)
+    
+    serializer = UserSerializer(user)
+    
+    response_data={
+        'user':serializer.data
+    }
+    return Response(response_data)

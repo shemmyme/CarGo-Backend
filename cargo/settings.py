@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-#p6^9)%wldznc)$a0t3@k4*-!+6@sj^wuvec713e!$u*&*4)=5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'userside',
     'adminside',
-    'booking',
+    'rentals',
     'chat',
     'corsheaders',
     'rest_framework',
@@ -95,13 +95,14 @@ MIDDLEWARE = [
 
 
 ASGI_APPLICATION = 'cargo.asgi.application'
-WSGI_APPLICATION = 'cargo.wsgi.application'
+
+# WSGI_APPLICATION = 'cargo.wsgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 5173)],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
@@ -145,7 +146,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cargo_data',
+        'NAME': 'cargo_db',
         'USER': 'postgres',
         'PASSWORD': 'shemim123',
         'HOST': 'localhost', 
@@ -211,3 +212,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'cargo.rentals123@gmail.com'
 EMAIL_HOST_PASSWORD = 'wbpfmgrqbgbxpwwg'
 EMAIL_USE_TLS=True
+
+RAZORPAY_KEY_ID = "rzp_test_BBvPci4QCLpdZs" 
+RAZORPAY_KEY_SECRET = "Z8rIFFsHWrBtDmEHi7pnu8uV"
