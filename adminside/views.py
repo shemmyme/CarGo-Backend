@@ -8,6 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status, generics
 from django.db.models import Q
+from django.contrib import messages
 
 
 
@@ -27,20 +28,26 @@ class CarAddView(generics.CreateAPIView):
         print(serializer.errors)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 class CouponAddView(generics.CreateAPIView):
     queryset = Coupons.objects.all()
     serializer_class = CouponsSerialzer
     
-    def create(self,request,*args,**kwargs):
-        queryset = self.get_queryset()
+    def create(self, request, *args, **kwargs):
+        coupon_code = request.data.get('coupon_code', '')  # Get the name of the coupon from the request data
+        existing_coupon = Coupons.objects.filter(coupon_code=coupon_code).first()
+        
+        if existing_coupon:
+            # A coupon with the same name already exists
+            messages.error(request, f"A coupon with the name '{coupon_code}' already exists.")
+            return Response({"detail": "Coupon with the same name already exists."}, status=status.HTTP_208_ALREADY_REPORTED)
+
         serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid():
             self.perform_create(serializer)
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CouponListView(generics.ListAPIView):
     serializer_class = CouponsSerialzer
@@ -55,6 +62,8 @@ class CouponListView(generics.ListAPIView):
             queryset = queryset.filter(
                 Q(coupon_code__icontains=search_query)
             )
+        
+        queryset = queryset.order_by('-created_at')
 
         return queryset
 

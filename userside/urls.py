@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.getRoutes, name='get_routes'),
     path('profile/<int:user_id>/', views.UserProfileView, name='profile-view'),
     path('profile-user/<int:user_id>/', views.UserView, name='profile-view'),
+    path('users/', views.UserView, name='get_user_data'),
     path('profileup/<int:user_id>/', views.UpdateUserProfile, name='profile-update'),
     path('verify/<int:userId>/', views.verify_user, name='verify-license'),
     path('login/',views. MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

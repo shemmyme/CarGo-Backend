@@ -213,3 +213,15 @@ def UserView(request,user_id):
         'user':serializer.data
     }
     return Response(response_data)
+
+def get_user_data(request):
+    users = User.objects.values('id', 'username')  # You can customize the fields you need
+    return JsonResponse(list(users), safe=False)
+
+def get_queryset(self):
+        # Get a list of user IDs from the query parameters
+        user_ids = self.request.query_params.get('ids', '').split(',')
+
+        # Filter the User queryset based on the provided user IDs
+        return User.objects.filter(id__in=user_ids)
+

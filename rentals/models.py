@@ -5,6 +5,8 @@ import string
 from datetime import datetime
 import random
 
+
+
 def generate_order_id():
     """Generate a 14-character order ID"""
     while True:
@@ -32,7 +34,7 @@ class Bookings(models.Model):
     car = models.ForeignKey(Cars, on_delete=models.CASCADE)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    start_time = models.TimeField(null=True)
+    start_time = models.TimeField(null=True)                                                                                           
     end_time = models.TimeField(null=True)
     total_cost = models.IntegerField(null=True)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -52,7 +54,7 @@ class Reviews(models.Model):
       
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    booking = models.ForeignKey(Bookings,on_delete=models.CASCADE)
+    booking = models.ForeignKey(Bookings,on_delete=models.CASCADE,null=True)
     payment_id = models.CharField(max_length=100, verbose_name="Payment ID")
     order_id = models.CharField(max_length=100, verbose_name="Order ID")
     signature = models.CharField(max_length=200, verbose_name="Signature")

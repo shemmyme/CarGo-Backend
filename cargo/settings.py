@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = 'django-insecure-#p6^9)%wldznc)$a0t3@k4*-!+6@sj^wuvec713e!$u*&*4)=5'
+SECRET_KEY =config('secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -102,7 +103,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [config('redis')],
         },
     },
 }
@@ -146,10 +147,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cargo_db',
-        'USER': 'postgres',
-        'PASSWORD': 'shemim123',
-        'HOST': 'localhost', 
+        'NAME': config('database'),
+        'USER': config('user'),
+        'PASSWORD':config('password'),
+        'HOST': config('hostname'), 
     }
 }
 
@@ -209,9 +210,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'cargo.rentals123@gmail.com'
-EMAIL_HOST_PASSWORD = 'wbpfmgrqbgbxpwwg'
+EMAIL_HOST_USER = config('email_user')
+EMAIL_HOST_PASSWORD =config('email_password')
 EMAIL_USE_TLS=True
 
-RAZORPAY_KEY_ID = "rzp_test_BBvPci4QCLpdZs" 
-RAZORPAY_KEY_SECRET = "Z8rIFFsHWrBtDmEHi7pnu8uV"
+RAZORPAY_KEY_ID =config('razor_id') 
+RAZORPAY_KEY_SECRET =config('razor_key')

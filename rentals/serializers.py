@@ -7,7 +7,7 @@ from userside.serializers import UserSerializer
 class BookingSerilaizer(ModelSerializer):
     class Meta:
         model = Bookings
-        fields = ['id','car', 'user', 'start_date', 'end_date', 'start_time', 'total_cost','booking_status']
+        fields = ['id','car', 'user', 'start_date', 'end_date', 'start_time', 'total_cost','booking_status','is_paid']
         
 class BookingLists(ModelSerializer):
     car = CarsSerializer()
@@ -22,6 +22,7 @@ class ReviewCreateSerializer(ModelSerializer):
      fields = ['user','car', 'booking', 'comment', 'rating']
      
 class ReviewListSerializer(ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Reviews
         fields = '__all__'
