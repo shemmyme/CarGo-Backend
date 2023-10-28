@@ -146,12 +146,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE':'django.db.backends.postgresql',
         'NAME': config('Database'),
         'USER': config('Username'),
         'PASSWORD':config('Password'),
-        'HOST': config('Hostname'), 
-        'PORT':5432
+        'HOST':config('Hostname'), 
+        'PORT':config('Port')
     }
 }
 
