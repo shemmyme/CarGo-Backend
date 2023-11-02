@@ -224,9 +224,9 @@ RAZORPAY_KEY_SECRET =config('razor_key')
 
 
 CLOUDINARY_STORAGE={ 
-'CLOUD_NAME' : "dom0eathi", 
-'API_KEY' : "692764988371741", 
-'API_SECRET' : 'hpGk9UV67Fa6Io2lAteNEhMurI4' 
+'CLOUD_NAME' : config('Cloud_name'), 
+'API_KEY' : config('Api_key'),
+'API_SECRET' : config('Api_secret') 
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
