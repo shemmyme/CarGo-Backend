@@ -2,7 +2,6 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from decouple import config
-import cloudinary_storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -223,10 +222,11 @@ EMAIL_USE_TLS=True
 RAZORPAY_KEY_ID =config('razor_id') 
 RAZORPAY_KEY_SECRET =config('razor_key')
 
-# CLOUDINARY_STORAGE={ 
-# 'CLOUD_NAME' : "dom0eathi", 
-# 'API_KEY' : "692764988371741", 
-# 'API_SECRET' : 'hpGk9UV67Fa6Io2lAteNEhMurI4' 
-# }
 
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE={ 
+'CLOUD_NAME' : "dom0eathi", 
+'API_KEY' : "692764988371741", 
+'API_SECRET' : 'hpGk9UV67Fa6Io2lAteNEhMurI4' 
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
