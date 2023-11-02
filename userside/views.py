@@ -152,13 +152,26 @@ def UpdateUserProfile(request, user_id):
         user.livePhoto = live_photo  # Update the livePhoto field
         print(live_photo)
 
+    new_username = request.data.get('username')
+    profile_img = request.FILES.get('profile_img')
+    
+    if new_username:
+        user.username = new_username
+        
+    if profile_img:
+        user.profile_img = profile_img
+
     user.save()
+    
+    
+    
 
     # Trigger the signal after saving the user
     if (license_front or license_back or live_photo):
         post_save.send(sender=User, instance=user, created=True)
 
-    return Response({"message": "License images and live photo updated successfully"}, status=status.HTTP_201_CREATED)
+    return Response({"message": "Changes updated successfully"}, status=status.HTTP_201_CREATED)
+
 
 @api_view(['POST'])
 def block_user(request, user_id):

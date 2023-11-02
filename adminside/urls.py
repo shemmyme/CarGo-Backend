@@ -8,5 +8,6 @@ urlpatterns = [
     path('users/', views.UserListView.as_view()),
     path('addcoupon/', views.CouponAddView.as_view()),
     path('listcoupon/', views.CouponListView.as_view()),
+    path('validate-coupon/', views.validate_coupon, name='validate_coupon'),
     
 ]

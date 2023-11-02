@@ -25,6 +25,11 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         validated_data.pop('profile_image', None)
         return super().update(instance, validated_data)
+    
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["name", "profile_img"] 
 
 
 

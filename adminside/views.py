@@ -9,6 +9,9 @@ from rest_framework.views import APIView
 from rest_framework import status, generics
 from django.db.models import Q
 from django.contrib import messages
+from rest_framework.decorators import api_view
+from django.utils import timezone
+from django.http import JsonResponse
 
 
 
@@ -28,6 +31,7 @@ class CarAddView(generics.CreateAPIView):
         print(serializer.errors)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class CouponAddView(generics.CreateAPIView):
     queryset = Coupons.objects.all()
     serializer_class = CouponsSerialzer
@@ -130,4 +134,15 @@ class UserListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset,many=True)
         return Response(serializer.data)
     
-        
+@api_view(['GET'])
+def validate_coupon(request):
+    coupon_code = request.GET.get('code', '')
+    print('ethiiiiiiiiiiitillla 139')
+    try:
+        coupon = Coupons.objects.get(coupon_code=coupon_code, active=True)
+        discount_percentage = coupon.discount_perc
+        return JsonResponse({'discount_perc': discount_percentage}, status=200)
+    except Coupons.DoesNotExist:
+        return JsonResponse({'error': 'Coupon not found or not active.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'Error applying coupon: {str(e)}'}, status=500)

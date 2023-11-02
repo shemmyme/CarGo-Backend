@@ -76,10 +76,22 @@ class BookingList(generics.ListAPIView):
     queryset = Bookings.objects.all()
     serializer_class = BookingLists
     
+    
 class Booking(generics.RetrieveAPIView):
-    queryset = Bookings.objects.all() 
+    queryset = Bookings.objects.all()
     serializer_class = BookingSerilaizer
     lookup_field = 'id'
+
+    # def get(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+
+    #     print('88...........................................................')
+    #     if instance.booking_status == 'Rented' and instance.end_date < date.today():
+    #         instance.booking_status = 'Returned'
+    #         instance.save()
+
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
     
 class ReviewCreate(generics.CreateAPIView):
     queryset = Reviews.objects.all()
@@ -87,22 +99,31 @@ class ReviewCreate(generics.CreateAPIView):
 
     
 class ReviewsHome(generics.ListAPIView):
-    print('reached here')
     queryset = Reviews.objects.all()
     serializer_class = ReviewListSerializer
-    print('done all')
+    
     
     
 class ReviewList(generics.ListAPIView):
     serializer_class = ReviewListSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['car__id']  # Assuming the field is 'car' and its ID is used for filtering
+    search_fields = ['car__id']  
 
     def get_queryset(self):
         car_id = self.kwargs['carId']
         queryset = Reviews.objects.filter(car=car_id)
         return queryset
+    
+class ReviewByBooking(generics.ListAPIView):
+    serializer_class = ReviewListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['booking__id']  # Assuming the field is 'booking' and its ID is used for filtering
 
+    def get_queryset(self):
+        booking_id = self.kwargs['bookingId']
+        queryset = Reviews.objects.filter(booking=booking_id)
+        return queryset
+    
 # class UserReview(generics.ListAPIView):
 #     serializer_class = ReviewListSerializer
 #     filter_backends = [filters.SearchFilter]
