@@ -58,7 +58,7 @@ def Activate(request,uidb64,token):
         user.save()
         print('saved')
 
-        return HttpResponseRedirect('http://localhost:5173/login')
+        return HttpResponseRedirect('https://cargoself.vercel.app/login')
     
     
 class UserRegistration(APIView):
@@ -137,7 +137,6 @@ def UpdateUserProfile(request, user_id):
     except User.DoesNotExist:
         raise Http404("User not found")
 
-    print(f"request.user.id: {request.user.id}")
     print(f"user_id from token: {user_id}")
 
     # Handle licenseFront and licenseBack file uploads

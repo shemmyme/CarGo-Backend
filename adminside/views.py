@@ -99,8 +99,7 @@ class CarListView(generics.ListAPIView):
         start_date = self.request.query_params.get('start_date', None)
         end_date = self.request.query_params.get('end_date', None)
         if start_date and end_date:
-            # Assuming you have a `bookings` relationship field in your Cars model
-            # This filters out cars with bookings that overlap with the specified date range
+
             queryset = queryset.exclude(
                 bookings__end_date__gte=start_date,
                 bookings__start_date__lte=end_date
@@ -133,16 +132,31 @@ class UserListView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset,many=True)
         return Response(serializer.data)
-    
+
 @api_view(['GET'])
-def validate_coupon(request):
-    coupon_code = request.GET.get('code', '')
-    print('ethiiiiiiiiiiitillla 139')
+def validate_coupon(request, coupon_code):
     try:
-        coupon = Coupons.objects.get(coupon_code=coupon_code, active=True)
-        discount_percentage = coupon.discount_perc
-        return JsonResponse({'discount_perc': discount_percentage}, status=200)
+        now = timezone.now().date()
+        coupon = Coupons.objects.get(Q(coupon_code=coupon_code), active=True)
+
+        # Case 1: Coupon code exists, not expired, and uses remaining
+        if coupon.start_date <= now <= coupon.end_date and coupon.uses_remaining > 0:
+            discount_percentage = coupon.discount_perc
+            coupon.uses_remaining -= 1 
+            coupon.save()
+            return JsonResponse({'discount_perc': discount_percentage})
+
+        # Case 2: Coupon code exists, but it's expired
+        if now < coupon.start_date or now > coupon.end_date:
+            return JsonResponse({'error': 'Coupon has expired'}, status=400)
+
+        # Case 3: Coupon code exists, but no uses remaining
+        if coupon.uses_remaining <= 0:
+            return JsonResponse({'error': 'Coupon has no uses remaining'}, status=400)
+
     except Coupons.DoesNotExist:
-        return JsonResponse({'error': 'Coupon not found or not active.'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': f'Error applying coupon: {str(e)}'}, status=500)
+        # Case 4: Coupon code not found
+        return JsonResponse({'error': 'Coupon not found'}, status=404)
+    
+    # Case 5: Coupon validation failed (for any other error)
+    return JsonResponse({'error': 'Coupon validation failed'}, status=500)
