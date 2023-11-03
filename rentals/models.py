@@ -42,6 +42,7 @@ class Bookings(models.Model):
     is_paid = models.BooleanField(default=False)
     
     
+    
     def __str__(self):
         return f"Booking for {self.user.email} - {self.car.product_name} ({self.start_date} to {self.end_date})"
 

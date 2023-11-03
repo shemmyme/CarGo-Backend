@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
-from adminside.models import Cars
 # from rentals.models import Bookings
 from .models import *
 

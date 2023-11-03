@@ -1,4 +1,5 @@
 from django.db import models
+from userside.models import User
 
 
 class Cars(models.Model):
@@ -23,11 +24,14 @@ class Coupons(models.Model):
     description = models.TextField(blank=True)
     start_date = models.DateField()
     end_date = models.DateField()
-    max_uses = models.PositiveIntegerField()
     uses_remaining = models.PositiveIntegerField(blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     image_1 = models.ImageField(blank=True)
+    
+class UserCouponUsage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupons, on_delete=models.CASCADE)
     
 
 

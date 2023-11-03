@@ -135,15 +135,29 @@ class UserListView(generics.ListAPIView):
 
 @api_view(['GET'])
 def validate_coupon(request, coupon_code):
+    user_id = request.GET.get('user_id')
+
     try:
         now = timezone.now().date()
-        coupon = Coupons.objects.get(Q(coupon_code=coupon_code), active=True)
+        coupon = Coupons.objects.get(coupon_code=coupon_code)
+
+        if user_id:
+            user = User.objects.get(id=user_id)
+
+            # Check if the user has already used this coupon
+            if UserCouponUsage.objects.filter(user=user, coupon=coupon).exists():
+                return JsonResponse({'error': 'Coupon already applied by user'}, status=400)
 
         # Case 1: Coupon code exists, not expired, and uses remaining
         if coupon.start_date <= now <= coupon.end_date and coupon.uses_remaining > 0:
             discount_percentage = coupon.discount_perc
-            coupon.uses_remaining -= 1 
+            coupon.uses_remaining -= 1
             coupon.save()
+
+            # If the coupon is successfully applied, add the user to the list of users who have used the coupon
+            if user_id:
+                UserCouponUsage.objects.create(user=user, coupon=coupon)
+
             return JsonResponse({'discount_perc': discount_percentage})
 
         # Case 2: Coupon code exists, but it's expired
@@ -157,6 +171,6 @@ def validate_coupon(request, coupon_code):
     except Coupons.DoesNotExist:
         # Case 4: Coupon code not found
         return JsonResponse({'error': 'Coupon not found'}, status=404)
-    
+
     # Case 5: Coupon validation failed (for any other error)
     return JsonResponse({'error': 'Coupon validation failed'}, status=500)
