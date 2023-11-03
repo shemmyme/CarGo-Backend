@@ -59,6 +59,7 @@ def Activate(request,uidb64,token):
         print('saved')
 
         return HttpResponseRedirect('https://cargoself.vercel.app/login')
+        
     
     
 class UserRegistration(APIView):
