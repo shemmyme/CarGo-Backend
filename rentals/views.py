@@ -124,15 +124,15 @@ class ReviewByBooking(generics.ListAPIView):
         queryset = Reviews.objects.filter(booking=booking_id)
         return queryset
     
-# class UserReview(generics.ListAPIView):
-#     serializer_class = ReviewListSerializer
-#     filter_backends = [filters.SearchFilter]
-#     search_fields = ['user__id']  # Assuming the field is 'car' and its ID is used for filtering
+class UserReview(generics.ListAPIView):
+    serializer_class = ReviewListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['user__id']  # Assuming the field is 'car' and its ID is used for filtering
 
-#     def get_queryset(self):
-#         user_id = self.kwargs['userId']
-#         queryset = Reviews.objects.filter(user=user_id)
-#         return queryset
+    def get_queryset(self):
+        user_id = self.kwargs['userId']
+        queryset = Reviews.objects.filter(user=user_id)
+        return queryset
     
 from django.shortcuts import get_object_or_404, render
 from django.views import View
