@@ -130,8 +130,9 @@ class UserReview(generics.ListAPIView):
     search_fields = ['user__id']  # Assuming the field is 'car' and its ID is used for filtering
 
     def get_queryset(self):
-        user_id = self.kwargs['userId']
+        user_id = self.kwargs['user_id']
         queryset = Reviews.objects.filter(user=user_id)
+        
         return queryset
     
 from django.shortcuts import get_object_or_404, render
