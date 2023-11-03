@@ -23,6 +23,7 @@ class ReviewCreateSerializer(ModelSerializer):
      
 class ReviewListSerializer(ModelSerializer):
     user = UserSerializer()
+    car = CarsSerializer()
     class Meta:
         model = Reviews
         fields = '__all__'
