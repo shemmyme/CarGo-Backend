@@ -27,7 +27,7 @@ class Coupons(models.Model):
     uses_remaining = models.PositiveIntegerField(blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    image_1 = models.ImageField(blank=True)
+    image_1 = models.ImageField(blank=False)
     
 class UserCouponUsage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
