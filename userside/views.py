@@ -177,7 +177,7 @@ def UpdateUserProfile(request, user_id):
 def block_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
-        user.is_active = False  # Deactivate the user
+        user.is_active = False 
         user.save()
         return JsonResponse({'message': 'User blocked successfully'})
     except User.DoesNotExist:
@@ -187,7 +187,7 @@ def block_user(request, user_id):
 def unblock_user(request, user_id):
     try:
         user = User.objects.get(id=user_id)
-        user.is_active = True  # Activate the user
+        user.is_active = True 
         user.save()
         return JsonResponse({'message': 'User unblocked successfully'})
     except User.DoesNotExist:
@@ -201,7 +201,7 @@ def verify_user(request, userId):
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     print(user,'nokkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
     if user:
-        user.is_verified = True  # Set the user as verified
+        user.is_verified = True  
         user.save()
         print('aaaaaaaaayiiiiiiiiiiiiiiiii')
         return Response({"message": "User has been verified"}, status=status.HTTP_200_OK)
